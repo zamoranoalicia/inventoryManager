@@ -4,8 +4,12 @@ import { mount } from '@vue/test-utils'
 import App from '../App.vue'
 
 describe('App', () => {
-  it('mounts renders properly', () => {
-    const wrapper = mount(App)
-    expect(wrapper.text()).toContain('You did it!')
+  it('renders the app shell', () => {
+    // Stub InventoryPage so the test does not require the Vue Query / PrimeVue plugins.
+    const wrapper = mount(App, {
+      global: { stubs: { InventoryPage: true } },
+    })
+    // Sidebar branding from the FarmaCo shell.
+    expect(wrapper.text()).toContain('FarmaCo')
   })
 })

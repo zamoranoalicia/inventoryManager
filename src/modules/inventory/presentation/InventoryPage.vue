@@ -1,269 +1,27 @@
-<template>
-  <div class="card">
-    <Toolbar class="mb-4">
-      <template #start>
-        <Button
-          label="New"
-          icon="pi pi-plus"
-          class="p-button-success mr-2"
-          @click="openNew"
-        />
-        <Button
-          label="Delete"
-          icon="pi pi-trash"
-          class="p-button-danger"
-          @click="confirmDeleteSelected"
-          :disabled="!selectedProducts || !selectedProducts.length"
-        />
-      </template>
-      <template #end>
-        <FileUpload
-          mode="basic"
-          accept="image/*"
-          :maxFileSize="1000000"
-          label="Import"
-          chooseLabel="Import"
-          class="p-mr-2 p-d-inline-block"
-        />
-        <Button
-          label="Export"
-          icon="pi pi-upload"
-          class="p-button-help"
-          @click="exportCSV"
-        />
-      </template>
-    </Toolbar>
-
-    <DataTable
-      ref="dt"
-      v-model:selection="selectedProducts"
-      :value="products"
-      dataKey="id"
-      :paginator="true"
-      :rows="params.size"
-      :rowsPerPageOptions="[5, 10, 25]"
-      :loading="isLoading"
-      :lazy="true"
-      :totalRecords="total"
-      @page="onPage($event)"
-      @sort="onSort($event)"
-      @filter="onFilter($event)"
-      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-      responsiveLayout="scroll"
-      class="p-datatable-sm custom-datatable"
-    >
-      <template #header>
-        <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-          <h5 class="m-0">Manage Products</h5>
-          <span class="block mt-2 md:mt-0 p-input-icon-left">
-            <i class="pi pi-search" />
-            <InputText
-              v-model="globalFilter"
-              placeholder="Search..."
-            />
-          </span>
-        </div>
-      </template>
-
-      <Column
-        selectionMode="multiple"
-        headerStyle="width: 3rem"
-      ></Column>
-      <Column
-        field="sku"
-        header="SKU"
-        :sortable="true"
-        style="min-width:10rem"
-      >
-        <template #body="slotProps">
-          {{ slotProps.data.sku }}
-        </template>
-      </Column>
-      <Column
-        field="productName"
-        header="Name"
-        :sortable="true"
-        style="min-width:12rem"
-      >
-        <template #body="slotProps">
-          {{ slotProps.data.productName }}
-        </template>
-      </Column>
-      <Column
-        field="category"
-        header="Category"
-        :sortable="true"
-        style="min-width:10rem"
-      >
-        <template #body="slotProps">
-          <span class="badge badge-secondary">
-            {{ slotProps.data.category }}
-          </span>
-        </template>
-      </Column>
-      <Column
-        field="reorderLevel"
-        header="Reorder Level"
-        :sortable="true"
-        style="min-width:10rem"
-      >
-        <template #body="slotProps">
-          {{ slotProps.data.reorderLevel }}
-        </template>
-      </Column>
-      <Column
-        header="Actions"
-        style="min-width:10rem"
-      >
-        <template #body="slotProps">
-          <Button
-            icon="pi pi-pencil"
-            class="p-button-rounded p-button-success mr-2"
-            @click="editProduct(slotProps.data)"
-          />
-          <Button
-            icon="pi pi-trash"
-            class="p-button-rounded p-button-warning"
-            @click="confirmDeleteProduct(slotProps.data)"
-          />
-        </template>
-      </Column>
-    </DataTable>
-
-    <Dialog
-      v-model:visible="productDialog"
-      :style="{ width: '450px' }"
-      header="Product Details"
-      :modal="true"
-      class="p-fluid"
-    >
-      <ProductForm
-        :product="product"
-        @update="product = $event"
-      />
-      <template #footer>
-        <Button
-          label="Cancel"
-          icon="pi pi-times"
-          class="p-button-text"
-          @click="hideDialog"
-        />
-        <Button
-          label="Save"
-          icon="pi pi-check"
-          class="p-button-text"
-          @click="saveProduct"
-        />
-      </template>
-    </Dialog>
-
-    <Dialog
-      v-model:visible="deleteProductDialog"
-      :style="{ width: '450px' }"
-      header="Confirm"
-      :modal="true"
-    >
-      <div class="confirmation-content">
-        <i
-          class="pi pi-exclamation-triangle mr-3"
-          style="font-size: 2rem"
-        />
-        <span v-if="product">
-          Are you sure you want to delete <b>{{ product.productName }}</b>?
-        </span>
-      </div>
-      <template #footer>
-        <Button
-          label="No"
-          icon="pi pi-times"
-          class="p-button-text"
-          @click="deleteProductDialog = false"
-        />
-        <Button
-          label="Yes"
-          icon="pi pi-check"
-          class="p-button-text"
-          @click="deleteProd"
-        />
-      </template>
-    </Dialog>
-
-    <Dialog
-      v-model:visible="deleteProductsDialog"
-      :style="{ width: '450px' }"
-      header="Confirm"
-      :modal="true"
-    >
-      <div class="confirmation-content">
-        <i
-          class="pi pi-exclamation-triangle mr-3"
-          style="font-size: 2rem"
-        />
-        <span>
-          Are you sure you want to delete the selected products?
-        </span>
-      </div>
-      <template #footer>
-        <Button
-          label="No"
-          icon="pi pi-times"
-          class="p-button-text"
-          @click="deleteProductsDialog = false"
-        />
-        <Button
-          label="Yes"
-          icon="pi pi-check"
-          class="p-button-text"
-          @click="deleteSelectedProducts"
-        />
-      </template>
-    </Dialog>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
-import { useToast } from 'primevue/usetoast';
-import { useConfirm } from 'primevue/useconfirm';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Button from 'primevue/button';
-import Toolbar from 'primevue/toolbar';
-import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
-import FileUpload from 'primevue/fileupload';
-import { Product } from '@/modules/inventory/domain/models/Product';
-import { useInventory } from '@/modules/inventory/application/useInventory';
-import ProductForm from './components/ProductForm.vue';
+import { ref, reactive, computed } from 'vue'
+import { Package } from '@lucide/vue'
+import { Product } from '@/modules/inventory/domain/models/Product'
+import { useInventory } from '@/modules/inventory/application/useInventory'
+import labels from '@/modules/inventory/labels'
+import { deriveStatus } from './productStatus'
+import InventoryStats from './components/InventoryStats.vue'
+import InventoryFilters from './components/InventoryFilters.vue'
+import ProductTable from './components/ProductTable.vue'
+import ProductCard from './components/ProductCard.vue'
+import ProductFormDrawer from './components/ProductFormDrawer.vue'
 
-const params = reactive({
-  page: 0,
-  size: 10,
-  sortField: '',
-  sortOrder: 0,
-  filters: {},
-});
+const emit = defineEmits<{ notify: [message: string] }>()
 
-const {
-  products,
-  total,
-  isLoading,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-} = useInventory(params);
+// Load a generous page so the catalog can be filtered client-side (the Figma design has no
+// paginator). Server pagination/sort remain available via these params if needed later.
+const params = reactive({ page: 0, size: 100, sortField: '', sortOrder: 0, filters: {} })
 
-const toast = useToast();
-const confirm = useConfirm();
+const { products, total, createProduct, updateProduct, deleteProduct } = useInventory(params)
 
-const dt = ref();
-const productDialog = ref(false);
-const deleteProductDialog = ref(false);
-const deleteProductsDialog = ref(false);
-const product = ref(
-  new Product({
-    id: '',
+function blankProduct() {
+  return new Product({
+    id: undefined,
     sku: '',
     barCode: '',
     productName: '',
@@ -276,123 +34,163 @@ const product = ref(
     sanitaryRegistration: '',
     reorderLevel: 0,
   })
-);
-const selectedProducts = ref([]);
-const globalFilter = ref('');
+}
 
-const openNew = () => {
-  product.value = new Product({
-    id: '',
-    sku: '',
-    barCode: '',
-    productName: '',
-    productDescription: '',
-    category: '',
-    prescriptionRequired: false,
-    controlledSubstance: false,
-    laboratoryId: null,
-    brandId: null,
-    sanitaryRegistration: '',
-    reorderLevel: 0,
-  });
-  productDialog.value = true;
-};
+// ── Filters ──────────────────────────────────────────────────────────
+const search = ref('')
+const filterCategory = ref('all')
+const filterStatus = ref('all')
 
-const hideDialog = () => {
-  productDialog.value = false;
-};
+const categories = computed(() =>
+  Array.from(new Set(products.value.map((p) => p.category).filter(Boolean))),
+)
 
-const saveProduct = () => {
-  if (product.value.id) {
-    updateProduct({ id: product.value.id, product: product.value });
-    toast.add({
-      severity: 'success',
-      summary: 'Successful',
-      detail: 'Product Updated',
-      life: 3000,
-    });
+const filtered = computed(() =>
+  products.value.filter((p) => {
+    const q = search.value.toLowerCase()
+    const matchSearch =
+      q === '' ||
+      p.productName.toLowerCase().includes(q) ||
+      p.sku.toLowerCase().includes(q) ||
+      p.barCode.includes(search.value)
+    const matchCat = filterCategory.value === 'all' || p.category === filterCategory.value
+    const matchStatus = filterStatus.value === 'all' || deriveStatus(p) === filterStatus.value
+    return matchSearch && matchCat && matchStatus
+  }),
+)
+
+const stats = computed(() => ({
+  total: total.value || products.value.length,
+  active: products.value.filter((p) => deriveStatus(p) === 'active').length,
+  low: products.value.filter((p) => deriveStatus(p) === 'low').length,
+  out: products.value.filter((p) => deriveStatus(p) === 'out').length,
+}))
+
+const controlledCount = computed(() => products.value.filter((p) => p.controlledSubstance).length)
+
+// ── Drawer + CRUD ────────────────────────────────────────────────────
+const drawerOpen = ref(false)
+const current = ref<Product>(blankProduct())
+
+function openNew() {
+  current.value = blankProduct()
+  drawerOpen.value = true
+}
+
+function editProduct(product: Product) {
+  current.value = new Product({ ...product, id: product.id || undefined })
+  drawerOpen.value = true
+}
+
+function saveProduct(product: Product) {
+  if (product.id) {
+    updateProduct({ id: product.id, product })
+    emit('notify', labels.productUpdated)
   } else {
-    createProduct(product.value);
-    toast.add({
-      severity: 'success',
-      summary: 'Successful',
-      detail: 'Product Created',
-      life: 3000,
-    });
+    createProduct(product)
+    emit('notify', labels.productAddedToast.replace('{name}', product.productName))
   }
-  productDialog.value = false;
-};
+  drawerOpen.value = false
+}
 
-const editProduct = (prod: Product) => {
-  product.value = prod;
-  productDialog.value = true;
-};
+// ── Delete confirmation ──────────────────────────────────────────────
+const pendingDelete = ref<Product | null>(null)
 
-const confirmDeleteProduct = (prod: Product) => {
-  product.value = prod;
-  deleteProductDialog.value = true;
-};
+function confirmDelete(product: Product) {
+  pendingDelete.value = product
+}
 
-const deleteProd = () => {
-  deleteProduct(product.value.id);
-  deleteProductDialog.value = false;
-  toast.add({
-    severity: 'success',
-    summary: 'Successful',
-    detail: 'Product Deleted',
-    life: 3000,
-  });
-};
+function performDelete() {
+  if (pendingDelete.value?.id) {
+    deleteProduct(pendingDelete.value.id)
+    emit('notify', labels.productDeleted)
+  }
+  pendingDelete.value = null
+}
 
-const confirmDeleteSelected = () => {
-  deleteProductsDialog.value = true;
-};
-
-const deleteSelectedProducts = () => {
-  selectedProducts.value.forEach((prod: Product) => deleteProduct(prod.id));
-  deleteProductsDialog.value = false;
-  selectedProducts.value = [];
-  toast.add({
-    severity: 'success',
-    summary: 'Successful',
-    detail: 'Products Deleted',
-    life: 3000,
-  });
-};
-
-const exportCSV = () => {
-  dt.value.exportCSV();
-};
-
-const onPage = (event: any) => {
-  params.page = event.page;
-  params.size = event.rows;
-};
-
-const onSort = (event: any) => {
-  params.sortField = event.sortField;
-  params.sortOrder = event.sortOrder;
-};
-
-const onFilter = (event: any) => {
-  params.filters = event.filters;
-};
+defineExpose({ openNew })
 </script>
 
-<style scoped>
-.custom-datatable .p-datatable-thead > tr > th {
-  background-color: #f8f9fa;
-  font-weight: 600;
-}
-.custom-datatable .p-datatable-tbody > tr:hover {
-  background-color: #e9ecef;
-}
-.badge {
-  padding: 0.25em 0.5em;
-  border-radius: 0.25rem;
-}
-.badge-secondary {
-  background-color: #6c757d;
-  color: white;
-}
-</style>
+<template>
+  <div class="flex flex-col gap-4 h-full">
+    <InventoryStats
+      :total="stats.total"
+      :active="stats.active"
+      :low="stats.low"
+      :out="stats.out"
+    />
+
+    <InventoryFilters
+      v-model:search="search"
+      v-model:category="filterCategory"
+      v-model:status="filterStatus"
+      :categories="categories"
+      :result-count="filtered.length"
+    />
+
+    <!-- Mobile: card list -->
+    <div class="md:hidden flex flex-col gap-3 flex-1 overflow-y-auto pb-2">
+      <div
+        v-if="filtered.length === 0"
+        class="flex flex-col items-center justify-center py-16 gap-3 text-center"
+      >
+        <Package class="w-8 h-8 text-muted-foreground" />
+        <p class="text-sm text-muted-foreground">{{ labels.emptyProducts }}</p>
+      </div>
+      <ProductCard
+        v-for="product in filtered"
+        :key="product.id"
+        :product="product"
+        @edit="editProduct"
+        @delete="confirmDelete"
+      />
+    </div>
+
+    <!-- Desktop: table -->
+    <ProductTable
+      :products="filtered"
+      :total="stats.total"
+      :controlled-count="controlledCount"
+      @edit="editProduct"
+      @delete="confirmDelete"
+    />
+
+    <!-- Product form drawer -->
+    <ProductFormDrawer
+      v-if="drawerOpen"
+      :product="current"
+      @save="saveProduct"
+      @close="drawerOpen = false"
+    />
+
+    <!-- Delete confirmation -->
+    <div v-if="pendingDelete" class="fixed inset-0 z-50 flex items-center justify-center">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="pendingDelete = null" />
+      <div class="relative w-full max-w-sm mx-4 bg-card rounded-xl shadow-2xl p-5 space-y-4">
+        <div>
+          <h2 class="text-foreground">{{ labels.confirm }}</h2>
+          <p class="text-sm text-muted-foreground mt-1">
+            {{ labels.confirmDeleteOne }}
+            <span class="text-foreground font-medium">{{ pendingDelete.productName }}</span>
+          </p>
+        </div>
+        <div class="flex items-center justify-end gap-3">
+          <button
+            type="button"
+            @click="pendingDelete = null"
+            class="px-4 py-2 text-sm rounded-md border border-border bg-background hover:bg-accent transition-colors"
+          >
+            {{ labels.no }}
+          </button>
+          <button
+            type="button"
+            @click="performDelete"
+            class="px-4 py-2 text-sm rounded-md bg-destructive text-destructive-foreground hover:opacity-90 transition-opacity"
+          >
+            {{ labels.yes }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

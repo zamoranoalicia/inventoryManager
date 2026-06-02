@@ -17,7 +17,9 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@lucide/vue": "^1.17.0",
     "@primeuix/themes": "^2.0.3",
+    "@tailwindcss/vite": "^4.3.0",
     "@tanstack/vue-query": "^5.96.0",
     "autoprefixer": "^10.4.27",
     "axios": "^1.14.0",

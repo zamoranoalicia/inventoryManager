@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import { ProductRepository } from '../infrastructure/ProductRepository';
 import { Product } from '../domain/models/Product';
