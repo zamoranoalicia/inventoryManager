@@ -1,51 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800&display=swap');
 @import 'tailwindcss';
 
 /*
- * Design tokens ported from Figma_ui/src/styles/theme.css (the React reference).
- * Keep these in sync with that file — they define the FarmaCo inventory look.
+ * FARMA ACTIVA brand theme.
+ * Palette: #D81B7D (magenta) · #7D2B7F (purple) · #5BBE63 (green) · #F4F5F7 (light) · #4A4A4A (ink)
+ * Typography: Montserrat. Base layout tokens originate from the Figma reference.
  */
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
   --font-size: 16px;
+
+  /* Brand palette */
+  --brand-pink: #d81b7d;
+  --brand-purple: #7d2b7f;
+  --brand-green: #5bbe63;
+  --brand-light: #f4f5f7;
+  --brand-ink: #4a4a4a;
+
   --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
+  --foreground: #4a4a4a;
   --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
+  --card-foreground: #4a4a4a;
+  --popover: #ffffff;
+  --popover-foreground: #4a4a4a;
+  --primary: #7d2b7f;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f5f7;
+  --secondary-foreground: #4a4a4a;
+  --muted: #f4f5f7;
+  --muted-foreground: #8a8a93;
+  --accent: #f4f5f7;
+  --accent-foreground: #4a4a4a;
   --destructive: #d4183d;
   --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
+  --border: rgba(74, 74, 74, 0.12);
   --input: transparent;
-  --input-background: #f3f3f5;
+  --input-background: #f4f5f7;
   --switch-background: #cbced4;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
+  --ring: #c98fcb;
+  --chart-1: #d81b7d;
+  --chart-2: #7d2b7f;
+  --chart-3: #5bbe63;
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.75rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #4a4a4a;
+  --sidebar-primary: #7d2b7f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f4f5f7;
+  --sidebar-accent-foreground: #7d2b7f;
+  --sidebar-border: rgba(74, 74, 74, 0.1);
+  --sidebar-ring: #c98fcb;
 }
 
 .dark {
@@ -86,6 +96,12 @@
 }
 
 @theme inline {
+  --font-sans: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --color-brand-pink: var(--brand-pink);
+  --color-brand-purple: var(--brand-purple);
+  --color-brand-green: var(--brand-green);
+  --color-brand-light: var(--brand-light);
+  --color-brand-ink: var(--brand-ink);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -132,23 +148,28 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   html {
     font-size: var(--font-size);
+    font-family: var(--font-sans);
   }
 
   h1 {
     font-size: var(--text-2xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
   }
 
   h2 {
     font-size: var(--text-xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
   }
 
   h3 {
@@ -179,5 +200,21 @@
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
+  }
+}
+
+@layer components {
+  /* Brand gradient fill for primary call-to-action surfaces (pink → purple). */
+  .bg-brand-gradient {
+    background-image: linear-gradient(135deg, var(--brand-pink) 0%, var(--brand-purple) 100%);
+    color: #fff;
+  }
+
+  /* Gradient text used for the FARMA ACTIVA wordmark. */
+  .text-brand-gradient {
+    background-image: linear-gradient(90deg, var(--brand-purple) 0%, var(--brand-pink) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 }

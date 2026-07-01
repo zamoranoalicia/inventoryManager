@@ -15,6 +15,7 @@ const mockProductData = {
   category: 'MEDICINE',
   prescriptionRequired: false,
   controlledSubstance: false,
+  laboratory: 'Alcos',
   laboratoryId: null,
   brandId: null,
   sanitaryRegistration: 'REG123',
@@ -43,6 +44,7 @@ describe('ProductRepository', () => {
     expect(result.data).toHaveLength(1)
     expect(result.data[0]?.sku).toBe('SKU001')
     expect(result.total).toBe(1)
+    expect(result.data[0]?.laboratory).toBe('Alcos')
   })
 
   it('should get product by id', async () => {
@@ -64,6 +66,7 @@ describe('ProductRepository', () => {
       category: 'SUPPLEMENT',
       prescriptionRequired: false,
       controlledSubstance: false,
+      laboratory: 'Alcos',
       laboratoryId: null,
       brandId: null,
       sanitaryRegistration: 'REG456',

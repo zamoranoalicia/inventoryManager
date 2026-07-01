@@ -12,7 +12,7 @@ import {
   Clipboard,
   TrendingDown,
 } from '@lucide/vue'
-import labels, { CATEGORIES } from '@/modules/inventory/labels'
+import labels, { CATEGORIES, LABORATORIES } from '@/modules/inventory/labels'
 import { Product } from '@/modules/inventory/domain/models/Product'
 import type { ProductType } from '@/types'
 import BaseSwitch from '@/components/ui/BaseSwitch.vue'
@@ -34,6 +34,7 @@ const form = reactive({
   productName: props.product.productName,
   productDescription: props.product.productDescription,
   category: props.product.category,
+  laboratory: props.product.laboratory,
   prescriptionRequired: props.product.prescriptionRequired,
   controlledSubstance: props.product.controlledSubstance,
   laboratoryId: props.product.laboratoryId,
@@ -42,7 +43,7 @@ const form = reactive({
   reorderLevel: props.product.reorderLevel ? String(props.product.reorderLevel) : '',
 })
 
-type FieldKey = 'sku' | 'productName' | 'category' | 'reorderLevel'
+type FieldKey = 'sku' | 'productName' | 'category' | 'reorderLevel' | 'laboratory' | 'brand'
 const errors = reactive<Partial<Record<FieldKey, string>>>({})
 
 function clearError(key: FieldKey) {
@@ -55,6 +56,7 @@ function validate(): boolean {
   errors.category = !form.category ? labels.required : undefined
   errors.reorderLevel =
     form.reorderLevel && isNaN(Number(form.reorderLevel)) ? labels.mustBeNumber : undefined
+  errors.laboratory = !form.laboratory ? labels.required : undefined
   return !errors.sku && !errors.productName && !errors.category && !errors.reorderLevel
 }
 
@@ -67,6 +69,7 @@ function handleSubmit() {
     productName: form.productName,
     productDescription: form.productDescription,
     category: form.category,
+    laboratory: form.laboratory,
     prescriptionRequired: form.prescriptionRequired,
     controlledSubstance: form.controlledSubstance,
     laboratoryId: form.laboratoryId,
@@ -201,6 +204,26 @@ function inputClass(hasError?: string) {
           <p v-if="errors.category" class="text-xs text-destructive mt-1">{{ errors.category }}</p>
         </div>
 
+        <!-- Laboratorio -->
+        <div>
+          <label class="flex items-center gap-1.5 text-sm text-foreground mb-1.5">
+            <Tag class="w-3.5 h-3.5 text-muted-foreground" />
+            {{ labels.fieldLaboratory }}
+            <span class="text-destructive">*</span>
+          </label>
+          <select
+            :class="inputClass(errors.laboratory)"
+            v-model="form.laboratory"
+            @change="clearError('laboratory')"
+          >
+            <option value="">{{ labels.selectLaboratory }}</option>
+            <option v-for="cat in LABORATORIES" :key="cat" :value="cat">{{ cat }}</option>
+          </select>
+          <p v-if="errors.laboratory" class="text-xs text-destructive mt-1">
+            {{ errors.laboratory }}
+          </p>
+        </div>
+
         <!-- Registro Sanitario + Reorden -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -240,9 +263,7 @@ function inputClass(hasError?: string) {
             {{ labels.regulatoryControl }}
           </p>
           <div class="space-y-3">
-            <div
-              class="flex items-center justify-between gap-4 py-3 px-4 rounded-lg bg-accent/40"
-            >
+            <div class="flex items-center justify-between gap-4 py-3 px-4 rounded-lg bg-accent/40">
               <div class="flex items-start gap-2.5 min-w-0">
                 <Shield class="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
                 <div class="min-w-0">
@@ -253,9 +274,7 @@ function inputClass(hasError?: string) {
               <BaseSwitch v-model="form.prescriptionRequired" />
             </div>
 
-            <div
-              class="flex items-center justify-between gap-4 py-3 px-4 rounded-lg bg-accent/40"
-            >
+            <div class="flex items-center justify-between gap-4 py-3 px-4 rounded-lg bg-accent/40">
               <div class="flex items-start gap-2.5 min-w-0">
                 <FlaskConical class="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
                 <div class="min-w-0">
@@ -284,14 +303,14 @@ function inputClass(hasError?: string) {
         <button
           type="button"
           @click="emit('close')"
-          class="px-4 py-2 text-sm rounded-md border border-border bg-background hover:bg-accent transition-colors"
+          class="px-5 py-2 text-sm font-medium rounded-full border border-border bg-background hover:bg-accent transition-colors"
         >
           {{ labels.cancel }}
         </button>
         <button
           type="button"
           @click="handleSubmit"
-          class="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition-opacity flex items-center gap-2"
+          class="px-5 py-2 text-sm font-semibold rounded-full bg-brand-gradient text-white shadow-sm hover:opacity-90 transition-opacity flex items-center gap-2"
         >
           <Package class="w-3.5 h-3.5" />
           {{ labels.saveProduct }}

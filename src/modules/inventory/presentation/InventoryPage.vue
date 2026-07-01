@@ -27,6 +27,7 @@ function blankProduct() {
     productName: '',
     productDescription: '',
     category: '',
+    laboratory: '',
     prescriptionRequired: false,
     controlledSubstance: false,
     laboratoryId: null,
@@ -178,14 +179,14 @@ defineExpose({ openNew })
           <button
             type="button"
             @click="pendingDelete = null"
-            class="px-4 py-2 text-sm rounded-md border border-border bg-background hover:bg-accent transition-colors"
+            class="px-5 py-2 text-sm font-medium rounded-full border border-border bg-background hover:bg-accent transition-colors"
           >
             {{ labels.no }}
           </button>
           <button
             type="button"
             @click="performDelete"
-            class="px-4 py-2 text-sm rounded-md bg-destructive text-destructive-foreground hover:opacity-90 transition-opacity"
+            class="px-5 py-2 text-sm font-semibold rounded-full bg-destructive text-destructive-foreground hover:opacity-90 transition-opacity"
           >
             {{ labels.yes }}
           </button>

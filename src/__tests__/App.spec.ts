@@ -9,7 +9,7 @@ describe('App', () => {
     const wrapper = mount(App, {
       global: { stubs: { InventoryPage: true } },
     })
-    // Sidebar branding from the FarmaCo shell.
-    expect(wrapper.text()).toContain('FarmaCo')
+    // Sidebar branding from the FARMA ACTIVA shell.
+    expect(wrapper.text()).toContain('FARMA')
   })
 })

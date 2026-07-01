@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Pill, AlertTriangle, ChevronRight, X } from '@lucide/vue'
+import { HeartPulse, AlertTriangle, ChevronRight, X } from '@lucide/vue'
 import labels from '@/modules/inventory/labels'
 import { NAV_ITEMS, type SectionId } from './sections'
 
@@ -39,12 +39,17 @@ function handleNav(id: SectionId) {
     <!-- Logo -->
     <div class="flex items-center justify-between px-6 py-5 border-b border-sidebar-border">
       <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-          <Pill class="w-4 h-4 text-primary-foreground" />
+        <div
+          class="w-9 h-9 rounded-xl bg-brand-gradient flex items-center justify-center shrink-0 shadow-sm"
+        >
+          <HeartPulse class="w-5 h-5 text-white" />
         </div>
         <div>
-          <p class="text-sidebar-foreground leading-none">{{ labels.appName }}</p>
-          <p class="text-xs text-muted-foreground leading-none mt-0.5">{{ labels.appTagline }}</p>
+          <p class="leading-none font-extrabold tracking-tight">
+            <span class="text-brand-purple">{{ labels.appNameFarma }}</span>
+            <span class="text-brand-pink">{{ labels.appNameActiva }}</span>
+          </p>
+          <p class="text-[11px] text-muted-foreground leading-none mt-1">{{ labels.appTagline }}</p>
         </div>
       </div>
       <!-- Close button – mobile only -->
@@ -100,7 +105,7 @@ function handleNav(id: SectionId) {
     <div class="px-6 py-4 border-t border-sidebar-border">
       <div class="flex items-center gap-3">
         <div
-          class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs text-secondary-foreground shrink-0"
+          class="w-8 h-8 rounded-full bg-brand-gradient flex items-center justify-center text-xs font-semibold text-white shrink-0"
         >
           AD
         </div>

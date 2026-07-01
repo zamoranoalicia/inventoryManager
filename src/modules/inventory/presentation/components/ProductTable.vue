@@ -20,6 +20,7 @@ const columns = [
   labels.sku,
   labels.colProduct,
   labels.fieldCategory,
+  labels.colLaboratory,
   labels.colStock,
   labels.colReorderLevel,
   labels.colFlags,
@@ -73,6 +74,9 @@ const columns = [
             </td>
             <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">
               {{ product.category || '—' }}
+            </td>
+            <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">
+              {{ product.laboratory || '—' }}
             </td>
             <td class="px-4 py-3">
               <div class="flex items-center gap-1.5">

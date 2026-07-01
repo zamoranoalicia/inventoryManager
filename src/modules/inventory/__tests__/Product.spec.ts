@@ -12,6 +12,7 @@ describe('Product', () => {
       category: 'MEDICINE',
       prescriptionRequired: false,
       controlledSubstance: false,
+      laboratory: 'Alcos',
       laboratoryId: null,
       brandId: null,
       sanitaryRegistration: 'REG123',
@@ -33,6 +34,7 @@ describe('Product', () => {
       category: 'MEDICINE',
       prescriptionRequired: true,
       controlledSubstance: false,
+      laboratory: 'Alcos',
       laboratoryId: 'lab1',
       brandId: 'brand1',
       sanitaryRegistration: 'REG123',
@@ -44,5 +46,6 @@ describe('Product', () => {
     expect(dto.sku).toBe('SKU001')
     expect(dto.productName).toBe('Test Product')
     expect(dto.prescriptionRequired).toBe(true)
+    expect(dto.laboratory).toBe('Alcos')
   })
 })

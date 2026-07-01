@@ -45,7 +45,7 @@ const subtitle = computed(() =>
       <button
         v-if="activeSection === 'inventory'"
         @click="emit('add-product')"
-        class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:opacity-90 transition-opacity"
+        class="flex items-center gap-2 px-3 sm:px-5 py-2 bg-brand-gradient text-white text-sm font-semibold rounded-full shadow-sm hover:opacity-90 transition-opacity"
       >
         <Plus class="w-4 h-4" />
         <span class="hidden sm:inline">{{ labels.newProduct }}</span>
