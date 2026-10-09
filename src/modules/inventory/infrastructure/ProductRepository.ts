@@ -4,7 +4,7 @@ import { Product } from '../domain/models/Product'
 import { ProductSchema } from '@/types'
 
 export class ProductRepository {
-  private baseUrl = 'http://localhost:8080/api/products';  // Adjust if needed
+  private baseUrl = 'https://api.farmactivabo.com/api/products' // Adjust if needed
 
   async getAllProducts(params: {
     page: number

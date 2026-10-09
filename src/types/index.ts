@@ -7,7 +7,7 @@ export const ProductSchema = z.object({
   productName: z.string(),
   productDescription: z.string(),
   category: z.string(),
-  laboratory: z.string(),
+  laboratory: z.string().nullable().optional(),
   prescriptionRequired: z.boolean(),
   controlledSubstance: z.boolean(),
   laboratoryId: z.string().nullable().optional(),
